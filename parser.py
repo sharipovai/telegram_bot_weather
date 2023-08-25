@@ -20,19 +20,34 @@ def get_data(url, get_html_log_path):
     else:
         write_log_file(get_html_log_path, "Get html is Error!")
 
+def get_parsing_dict(src):
+    data = re.findall(r"class=\"section section-content section-bottom-collapse\"([^&]*?)</section>", src)
+    today_info = data[0].split('weathertab weathertab')[1]
+    info = {'today_precipitation': 'На улице вроде ничего',
+            'today_precipitation_mm': '0',
+            'today_min_temp': '0',
+            'today_max_temp': '0'}
+    info['today_day'] = time.strftime("%a %d %b", time.gmtime(time.time()))
+    info['time'] = str(date.today())
+    re_samples = {'today_day': r"<div class=\"date [^>]*?\">([^>]*?)</div>",
+                  'today_precipitation': r"data-text=\"([^>]*?)\">",
+                  'today_precipitation_mm': r"<div class=\"precipitation\">([^<]*?)</div>",
+                  'today_min_temp': r"class=\"unit unit_temperature_c\">([^>]*?)</span>",
+                  'today_max_temp': r"class=\"unit unit_temperature_c\">([^>]*?)</span>"}
+    for key, value in re_samples.items():
+        x = re.findall(value, today_info)
+        if (x and key != 'today_max_temp'):
+            info[key] = x[0]
+        elif(x):
+            info[key] = x[1]
+    write_log_file(parsing_log_path, "Parsing html is Success!")
+    return info
+
 def parsing(file_path, parsing_log_path):
     try:
         with open(file_path, encoding="utf-8") as file:
             src = file.read()
-            data = re.findall(r"class=\"section section-content section-bottom-collapse\"([^&]*?)</section>", src)
-            today_info = data[0].split('weathertab weathertab')[1]
-            info = {}
-            info['today_day'] = re.findall(r"<div class=\"date [^>]*?\">([^>]*?)</div>", today_info)[0]
-            info['today_min_temp'] = re.findall(r"class=\"unit unit_temperature_c\">([^>]*?)</span>", today_info)[0]
-            info['today_max_temp'] = re.findall(r"class=\"unit unit_temperature_c\">([^>]*?)</span>", today_info)[1]
-            info['time'] = str(date.today())
-            # print(info)
-            write_log_file(parsing_log_path, "Parsing html is Success!")
+            info = get_parsing_dict(src)
     except Exception as ex:
         write_log_file(parsing_log_path, "Parsing html is Error!")
     try:
