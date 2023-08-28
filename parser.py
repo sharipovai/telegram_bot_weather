@@ -22,24 +22,36 @@ def get_data(url, get_html_log_path):
 
 def get_parsing_dict(src):
     data = re.findall(r"class=\"section section-content section-bottom-collapse\"([^&]*?)</section>", src)
-    today_info = data[0].split('weathertab weathertab')[1]
+    today_info = data[0].split('weathertab weathertab')[2]
+    now_info = data[0].split('weathertab weathertab')[1]
     info = {'today_precipitation': 'На улице вроде ничего',
             'today_precipitation_mm': '0',
             'today_min_temp': '0',
-            'today_max_temp': '0'}
+            'today_max_temp': '0',
+            'now_precipitation': 'Не выходи из комнаты',
+            'now_temperature': '0',
+            'feel_temperature': '0'}
     info['today_day'] = time.strftime("%a %d %b", time.gmtime(time.time()))
     info['time'] = str(date.today())
     re_samples = {'today_day': r"<div class=\"date [^>]*?\">([^>]*?)</div>",
                   'today_precipitation': r"data-text=\"([^>]*?)\">",
                   'today_precipitation_mm': r"<div class=\"precipitation\">([^<]*?)</div>",
                   'today_min_temp': r"class=\"unit unit_temperature_c\">([^>]*?)</span>",
-                  'today_max_temp': r"class=\"unit unit_temperature_c\">([^>]*?)</span>"}
+                  'today_max_temp': r"class=\"unit unit_temperature_c\">([^>]*?)</span>",
+                  'now_precipitation': r"data-text=\"([^>]*?)\">",
+                  'now_temperature': r"class=\"unit unit_temperature_c\"><span class=\"sign\">([^%]*?)<span",
+                  'feel_temperature': r"class=\"unit unit_temperature_c\"><span class=\"sign\">([^%]*?)<span"}
     for key, value in re_samples.items():
-        x = re.findall(value, today_info)
-        if (x and key != 'today_max_temp'):
+        if (key[0] == 't'):
+            x = re.findall(value, today_info)
+        else:
+            x = re.findall(value, now_info)
+        if ((x and key != 'today_max_temp') and (x and key != 'feel_temperature')):
             info[key] = x[0]
         elif(x):
             info[key] = x[1]
+    info['now_temperature'] = "".join(info['now_temperature'].split('</span>')).replace(" ","")
+    info['feel_temperature'] = "".join(info['feel_temperature'].split('</span>')).replace(" ", "")
     write_log_file(parsing_log_path, "Parsing html is Success!")
     return info
 
@@ -63,7 +75,7 @@ if __name__ == '__main__':
         'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
     }
     html_file_path = './index.html'
-    url = 'https://www.gismeteo.ru/weather-kazan-4364/tomorrow/'
+    url = 'https://www.gismeteo.ru/weather-kazan-4364/now/'
     get_html_log_path = './log/get_html_log'
     parsing_log_path = './log/pars_log'    # get_data(url, get_html_log_path)
 
@@ -71,4 +83,4 @@ if __name__ == '__main__':
         get_data(url, get_html_log_path)
         parsing(html_file_path, parsing_log_path)
         x = random.randint(0, 50)
-        time.sleep(1800+x)
+        time.sleep(1200+x)

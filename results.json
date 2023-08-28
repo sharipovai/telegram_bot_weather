@@ -1,6 +1,11 @@
 {
-    "today_day": "Вс, 20 авг",
-    "today_min_temp": "+14",
-    "today_max_temp": "+22",
-    "time": "2023-08-20"
+    "today_precipitation": "Пасмурно,  дождь",
+    "today_precipitation_mm": "4,9 мм",
+    "today_min_temp": "+9",
+    "today_max_temp": "+12",
+    "now_precipitation": "Облачно, без осадков",
+    "now_temperature": "+11",
+    "feel_temperature": "+9",
+    "today_day": "Пн, 28 авг",
+    "time": "2023-08-28"
 }
