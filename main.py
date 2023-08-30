@@ -33,7 +33,7 @@ def on_click(message):
         bot.send_message(message.chat.id, answer, parse_mode='html')
     elif message.text == 'Сейчас':
         answer = f"Сейчас в Казани\n{data['now_precipitation']}\n"\
-        f"{data['now_temperature']} По ощущению {data['today_max_temp']}"
+        f"{data['now_temperature']} По ощущению {data['feel_temperature']}"
         bot.send_message(message.chat.id, answer, parse_mode='html')
 
 
