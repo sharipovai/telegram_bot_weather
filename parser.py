@@ -31,8 +31,8 @@ def get_parsing_dict(src):
             'now_precipitation': 'Не выходи из комнаты',
             'now_temperature': '0',
             'feel_temperature': '0'}
-    info['today_day'] = time.strftime("%a %d %b", time.gmtime(time.time()))
-    info['time'] = str(date.today())
+    info['today_day'] = time.strftime("%a %d %b", time.localtime())
+    info['time'] = time.strftime("%H:%M", time.localtime())
     re_samples = {'today_day': r"<div class=\"date [^>]*?\">([^>]*?)</div>",
                   'today_precipitation': r"data-text=\"([^>]*?)\">",
                   'today_precipitation_mm': r"<div class=\"precipitation\">([^<]*?)</div>",
