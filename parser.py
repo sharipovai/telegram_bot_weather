@@ -1,15 +1,28 @@
+import glob
 import json
+import os
 import requests
 import re
 import time
-from datetime import date
+from datetime import datetime, timedelta
 import random
 
 def write_log_file(log_file_path, text):
-    with open(file=log_file_path, mode='a') as file:
+    full_file_name = log_file_path + time.strftime("_%d.%m.%Y")
+    with open(file=full_file_name, mode='a') as file:
         time_now = time.strftime("%d.%m.%Y %H:%M:%S")
         res_test = time_now + ' ' + text + '\n'
         file.write(res_test)
+
+def del_log_file():
+    del_day = (datetime.now() - timedelta(days=5)).strftime("%d.%m")
+    del_log_file_name = glob.glob("./log/*"+del_day+"*")
+    try:
+        for file in del_log_file_name:
+            os.remove(file)
+    except Exception as ex:
+        print(ex)
+
 
 def get_data(url, get_html_log_path):
     response = requests.get(url=url, headers=headers)
@@ -83,4 +96,5 @@ if __name__ == '__main__':
         get_data(url, get_html_log_path)
         parsing(html_file_path, parsing_log_path)
         x = random.randint(0, 50)
+        del_log_file()
         time.sleep(1200+x)

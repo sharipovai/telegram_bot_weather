@@ -45,7 +45,7 @@ def get_motivation():
         mot_str = file.readline()
         mot_arr = mot_str.split("/ ")
         mot_arr = [line.rstrip()  for line in mot_arr if len(line) > 10]
-        x = random.randint(0, len(mot_arr))
+        x = random.randint(0, len(mot_arr)-1)
         return mot_arr[x]
 @bot.message_handler()
 def info(message):
