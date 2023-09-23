@@ -2,6 +2,8 @@ import glob
 import json
 import os
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import re
 import time
 from datetime import datetime, timedelta
@@ -25,7 +27,12 @@ def del_log_file():
 
 
 def get_data(url, get_html_log_path):
-    response = requests.get(url=url, headers=headers)
+    session = requests.Session()
+    retry = Retry(connect=3, backoff_factor=0.5)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    response = session.get(url=url, headers=headers)
     if response.status_code == 200:
         with open(file='index.html', mode='w') as file:
             file.write(response.text)
