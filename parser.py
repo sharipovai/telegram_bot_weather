@@ -41,7 +41,7 @@ def get_data(url, get_html_log_path):
         write_log_file(get_html_log_path, "Get html is Error!")
 
 def get_parsing_dict(src):
-    data = re.findall(r"class=\"section section-content section-bottom-collapse\"([^&]*?)</section>", src)
+    data = re.findall(r"class=\"section section-content section-bottom-collapse\"([^@]*?)</section>", src)
     today_info = data[0].split('weathertab weathertab')[2]
     now_info = data[0].split('weathertab weathertab')[1]
     info = {'today_precipitation': 'На улице вроде ничего',
@@ -73,6 +73,8 @@ def get_parsing_dict(src):
     info['now_temperature'] = "".join(info['now_temperature'].split('</span>')).replace(" ","")
     info['feel_temperature'] = "".join(info['feel_temperature'].split('</span>')).replace(" ", "")
     write_log_file(parsing_log_path, "Parsing html is Success!")
+    for key in info.keys():
+        info[key] = info[key].replace('&minus;', '-')
     return info
 
 def parsing(file_path, parsing_log_path):
